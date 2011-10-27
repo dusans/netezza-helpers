@@ -1,0 +1,12 @@
+settings:
+    odbc_dns: MY_ORACLE_ODBC_DNS
+    password: PASSWORD
+    schema: SHEMA
+    all_not_null: False
+    distribute_on_pk: True
+    append_columns: []
+    include: []
+    exclude: []
+    others_remove: False
+    table_prefix: ''
+    table_postfix: ''
