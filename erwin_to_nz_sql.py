@@ -2,10 +2,29 @@ import time
 import re
 import os
 import sys
+import yaml
+
+def islike(table, exclude):
+    for i in exclude:
+        if table.startswith(i):
+            return True
+
+    return False
 
 if len(sys.argv) < 2:
     print 'Usage: python erwin_to_nz_sql.py path_to_file [table_prefix]'
 else:
+
+    definition = yaml.load(open(r"erwin_to_nz_sql.yml"))
+    definition_settings = definition['settings']
+    table_prefix = definition_settings.get('table_prefix', '')
+    table_postfix = definition_settings.get('table_postfix', '')
+    all_not_null = definition_settings.get('all_not_null', False)
+    distribute_on_pk = definition_settings.get('distribute_on_pk', False)
+    max_string_size = definition_settings.get('max_string_size', 4000)
+    include = definition_settings.get('include', [])
+    exclude = definition_settings.get('exclude', [])
+
     sql_file_path = sys.argv[1]
     if len(sys.argv) > 2:
         table_prefix = sys.argv[2]

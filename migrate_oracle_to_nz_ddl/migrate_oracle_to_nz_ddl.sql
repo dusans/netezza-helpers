@@ -1,0 +1,29 @@
+--------------------
+-- ${table.full_table_name}
+--------------------
+--DROP TABLE ${table.full_table_name};
+CREATE TABLE ${table.full_table_name}
+(
+% for c in table.columns:
+        ${c},
+% endfor
+% for c in settings['append_columns']:
+        ${c},
+% endfor
+% if len(table.pks) > 0:
+    PRIMARY KEY (${', '.join([i.column_name for i in table.pks])})
+% endif
+)
+% if settings['distribute_on_pk'] == True:
+    DISTRIBUTE ON (${', '.join([i.column_name for i in table.pks])});
+% else:
+    DISTRIBUTE ON RANDOM;
+% endif
+
+
+% for f in table.foreign_keys:
+    ALTER TABLE ${table.full_table_name}
+        ADD CONSTRAINT ${f.fk_name}
+            FOREIGN KEY ( ${f.fkcolumn_name} ) REFERENCES ${settings['table_prefix']}${f.pktable_name}${settings['table_postfix']} ( ${f.pkcolumn_name} )
+    ;
+% endfor
