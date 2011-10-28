@@ -4,6 +4,7 @@ settings:
     schema: SHEMA
     all_not_null: False
     distribute_on_pk: True
+    max_string_len: 4000
     append_columns: []
     include: []
     exclude: []
