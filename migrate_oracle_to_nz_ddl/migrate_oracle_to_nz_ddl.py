@@ -6,7 +6,7 @@ import shutil
 import re
 
 # TODO: find and replace last ,
-# TODO: reserved works: [PRIMARY, POSITION] add _
+# TODO: reserved words: [PRIMARY, POSITION] add _
 # TODO: remove special char from column name: [#]
 def to_include(table, include, exclude, others_remove):
     if table in include:
@@ -114,7 +114,7 @@ class Column:
             return 'NUMERIC(%s%s)' % (self.column_size,
                     decimal_digits_string)
 
-        return 'NVARCHAR(%s) /*default*/' % (min(settings['max_string_len'], self.column_size))
+        return 'NVARCHAR(%s) /*default*/' % (min(settings['max_string_len'], max(1, self.column_size)))
     
     def __str__(self):
         s = '%s %s' % (self.column_name, self.nz_column)
