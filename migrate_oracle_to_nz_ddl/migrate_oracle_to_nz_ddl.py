@@ -6,7 +6,8 @@ import shutil
 import re
 
 # TODO: find and replace last ,
-# TODO: fks on end
+# TODO: reserved works: [PRIMARY, POSITION] add _
+# TODO: remove special char from column name: [#]
 def to_include(table, include, exclude, others_remove):
     if table in include:
         return True
@@ -52,6 +53,12 @@ class Table:
     def pre_print(self):
         self.full_table_name = '%s%s%s' % (settings['table_prefix'],
                 self.table_name, settings['table_postfix'])
+
+    def get_fks_string(self):
+        self.pre_print()
+        t = Template(filename='migrate_oracle_to_nz_ddl_fks.sql')
+        return t.render(table=self, settings=self.settings)
+
     def __str__(self):
         self.pre_print()
         t = Template(filename='migrate_oracle_to_nz_ddl.sql')
@@ -81,11 +88,17 @@ class Column:
             return 'NUMERIC(%s%s)' % (self.column_size,
                     self.decimal_digits_string)
 
-        if self.data_type in ('VARCHAR', 'VARCHAR2', 'CLOB', 'BLOB'):
+        if self.data_type in ('VARCHAR'):
+            return 'VARCHAR(%s)' % (min(settings['max_string_len'], self.column_size))
+
+        if self.data_type in ('VARCHAR2', 'CLOB', 'BLOB'):
             return 'NVARCHAR(%s)' % (min(settings['max_string_len'], self.column_size))
         
         if self.data_type in ('TIMESTAMP', 'DATE'):
             return 'TIMESTAMP'
+
+        if self.data_type in ('LONG'):
+            return 'BIGINT'
 
         if self.data_type in ('NUMERIC', 'NUMBER'):
             if self.decimal_digits != None:
@@ -149,3 +162,6 @@ for table in db_tables[:]:
 
         print table_ddl
         tables.append(t)
+
+for t in tables:
+    print t.get_fks_string()
