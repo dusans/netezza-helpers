@@ -103,7 +103,7 @@ class Column:
         if self.data_type in ('VARCHAR2', 'CLOB', 'BLOB'):
             return 'NVARCHAR(%s)' % (min(settings['max_string_len'], self.column_size))
         
-        if self.data_type in ('TIMESTAMP', 'DATE'):
+        if self.data_type in ('TIMESTAMP', 'DATE', 'TIMESTAMP(6)'):
             return 'TIMESTAMP'
 
         if self.data_type in ('LONG'):
@@ -167,7 +167,7 @@ for table in db_tables[:]:
         t = Table(table.table_name, settings['schema'], columns, pks, db_foreign_keys, settings)
         table_ddl =  str(t)
         if not 'PRIMARY KEY' in table_ddl:
-            print 'replace ,'
+            #print 'replace ,'
             table_ddl = table_ddl.replace(',\r\n)\r\n    DISTRIBUTE ON', '\r\n)\r\n    DISTRIBUTE ON')
             #table_ddl = re.sub('\,\n\)\n\s+DISTRIBUTE\sON\s', ')\nDISTRIBUTE ON ', table_ddl)
 
