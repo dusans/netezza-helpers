@@ -8,6 +8,7 @@ import re
 # TODO: find and replace last ,
 # TODO: reserved words: [PRIMARY, POSITION] add _
 # TODO: remove special char from column name: [#]
+# TODO: TIMESTAMP(6) error...
 def to_include(table, include, exclude, others_remove):
     if table in include:
         return True
@@ -102,14 +103,15 @@ class Column:
 
         if self.data_type in ('NUMERIC', 'NUMBER'):
             if self.decimal_digits != None:
-                if 1 <= self.column_size < 2:
-                    return 'BYTEINT'
-                elif 2 <= self.column_size < 6:
-                    return 'SMALLINT'
-                elif 6 <= self.column_size < 12:
-                    return 'INTEGER'
-                elif 12 <= self.column_size < 20:
-                    return 'BIGINT'
+                if self.decimal_digits == 0:
+                    if 1 <= self.column_size < 2:
+                        return 'BYTEINT'
+                    elif 2 <= self.column_size < 6:
+                        return 'SMALLINT'
+                    elif 6 <= self.column_size < 12:
+                        return 'INTEGER'
+                    elif 12 <= self.column_size < 20:
+                        return 'BIGINT'
 
             return 'NUMERIC(%s%s)' % (self.column_size,
                     decimal_digits_string)
