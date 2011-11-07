@@ -5,7 +5,6 @@ import os
 import shutil
 import re
 
-# TODO: oracle TIMESTAMP(6) datatype mapping...
 def to_include(table, include, exclude, others_remove):
     if table in include:
         return True
@@ -97,6 +96,9 @@ class Column:
             return 'NUMERIC(%s%s)' % (self.column_size,
                     self.decimal_digits_string)
 
+        if self.data_type in ('CHAR'):
+            return 'CHAR(%s)' % (min(settings['max_string_len'], self.column_size))
+
         if self.data_type in ('VARCHAR'):
             return 'VARCHAR(%s)' % (min(settings['max_string_len'], self.column_size))
 
@@ -167,9 +169,7 @@ for table in db_tables[:]:
         t = Table(table.table_name, settings['schema'], columns, pks, db_foreign_keys, settings)
         table_ddl =  str(t)
         if not 'PRIMARY KEY' in table_ddl:
-            #print 'replace ,'
             table_ddl = table_ddl.replace(',\r\n)\r\n    DISTRIBUTE ON', '\r\n)\r\n    DISTRIBUTE ON')
-            #table_ddl = re.sub('\,\n\)\n\s+DISTRIBUTE\sON\s', ')\nDISTRIBUTE ON ', table_ddl)
 
         print table_ddl
         tables.append(t)
