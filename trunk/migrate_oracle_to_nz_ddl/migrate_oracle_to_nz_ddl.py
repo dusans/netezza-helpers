@@ -5,10 +5,7 @@ import os
 import shutil
 import re
 
-# TODO: find and replace last ,
-# TODO: reserved words: [PRIMARY, POSITION] add _
-# TODO: remove special char from column name: [#]
-# TODO: TIMESTAMP(6) error...
+# TODO: oracle TIMESTAMP(6) datatype mapping...
 def to_include(table, include, exclude, others_remove):
     if table in include:
         return True
@@ -22,6 +19,17 @@ def to_include(table, include, exclude, others_remove):
 
     return True
 
+def validate_column_name(c):
+    invalid_characters = '#'
+    reserved_keywords = ['PRIMARY', 'POSITION'] 
+
+    for char in invalid_characters:
+        c = c.replace(char, '_')
+
+    if c in reserved_keywords:
+        c = c + '_'
+
+    return c
 
 def get_columns(cursor, schema, table):
     c = cursor.execute('''
@@ -75,7 +83,7 @@ class Column:
     def __init__(self, column_name, data_type, column_size,
             decimal_digits=None, is_nullable='NO'):
 
-        self.column_name = column_name
+        self.column_name = validate_column_name(column_name)
         self.data_type = data_type
         self.column_size = to_int(column_size)
         self.decimal_digits = to_int(decimal_digits)
@@ -159,8 +167,9 @@ for table in db_tables[:]:
         t = Table(table.table_name, settings['schema'], columns, pks, db_foreign_keys, settings)
         table_ddl =  str(t)
         if not 'PRIMARY KEY' in table_ddl:
-            #print 'replace ,'
-            table_ddl = re.sub('\,\n\)\n\s+DISTRIBUTE\sON\s', ')\nDISTRIBUTE ON ', table_ddl)
+            print 'replace ,'
+            table_ddl = table_ddl.replace(',\r\n)\r\n    DISTRIBUTE ON', '\r\n)\r\n    DISTRIBUTE ON')
+            #table_ddl = re.sub('\,\n\)\n\s+DISTRIBUTE\sON\s', ')\nDISTRIBUTE ON ', table_ddl)
 
         print table_ddl
         tables.append(t)
