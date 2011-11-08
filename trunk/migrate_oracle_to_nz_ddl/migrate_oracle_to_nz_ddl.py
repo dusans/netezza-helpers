@@ -105,8 +105,7 @@ class Column:
         if self.data_type in ('VARCHAR2', 'CLOB', 'BLOB', 'NVARCHAR'):
             return 'NVARCHAR(%s)' % (min(settings['max_string_len'], self.column_size))
         
-        if self.data_type in ('TIMESTAMP', 'DATE') or
-            self.data_type.startswith('TIMESTAMP'):
+        if self.data_type in ('TIMESTAMP', 'DATE') or self.data_type.startswith('TIMESTAMP'):
             return 'TIMESTAMP'
 
         if self.data_type in ('LONG'):
