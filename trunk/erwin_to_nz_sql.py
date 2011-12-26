@@ -2,7 +2,7 @@ import time
 import re
 import os
 import sys
-import yaml
+##import yaml
 
 def islike(table, exclude):
     for i in exclude:
