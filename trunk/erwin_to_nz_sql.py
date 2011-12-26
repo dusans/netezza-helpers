@@ -15,15 +15,15 @@ if len(sys.argv) < 2:
     print 'Usage: python erwin_to_nz_sql.py path_to_file [table_prefix]'
 else:
 
-    definition = yaml.load(open(r"erwin_to_nz_sql.yml"))
-    definition_settings = definition['settings']
-    table_prefix = definition_settings.get('table_prefix', '')
-    table_postfix = definition_settings.get('table_postfix', '')
-    all_not_null = definition_settings.get('all_not_null', False)
-    distribute_on_pk = definition_settings.get('distribute_on_pk', False)
-    max_string_size = definition_settings.get('max_string_size', 4000)
-    include = definition_settings.get('include', [])
-    exclude = definition_settings.get('exclude', [])
+##    definition = yaml.load(open(r"erwin_to_nz_sql.yml"))
+##    definition_settings = definition['settings']
+##    table_prefix = definition_settings.get('table_prefix', '')
+##    table_postfix = definition_settings.get('table_postfix', '')
+##    all_not_null = definition_settings.get('all_not_null', False)
+##    distribute_on_pk = definition_settings.get('distribute_on_pk', False)
+##    max_string_size = definition_settings.get('max_string_size', 4000)
+##    include = definition_settings.get('include', [])
+##    exclude = definition_settings.get('exclude', [])
 
     sql_file_path = sys.argv[1]
     if len(sys.argv) > 2:
@@ -96,15 +96,16 @@ else:
         print "-- %s" % "FOREIN KEYS"
         print "--", "*" * 40
         for alter in alter_table:
-            alter = alter.replace("FOREIGN KEY", "CONSTRAINT")
+            if "FOREIGN KEY" in alter:
+                alter = alter.replace("FOREIGN KEY", "CONSTRAINT")
 
-            alter = alter.splitlines()
-            table_name = alter[0].split(" ")[2]
-            alter[0] = alter[0].replace("ALTER TABLE ", "ALTER TABLE %s" % table_prefix)
-            alter[1] = alter[1].split(" ")
-            alter[1].insert(3, "FOREIGN KEY")
-            alter[1] = " ".join(alter[1])
-            alter[1] = alter[1].replace("REFERENCES ", "REFERENCES %s" % table_prefix)
+                alter = alter.splitlines()
+                table_name = alter[0].split(" ")[2]
+                alter[0] = alter[0].replace("ALTER TABLE ", "ALTER TABLE %s" % table_prefix)
+                alter[1] = alter[1].split(" ")
+                alter[1].insert(3, "FOREIGN KEY")
+                alter[1] = " ".join(alter[1])
+                alter[1] = alter[1].replace("REFERENCES ", "REFERENCES %s" % table_prefix)
 
-            print "\n".join(alter)
+                print "\n".join(alter)
 
