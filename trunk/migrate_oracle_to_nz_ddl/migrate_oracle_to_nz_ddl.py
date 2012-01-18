@@ -129,7 +129,7 @@ class Column:
         return 'NVARCHAR(%s) /*default*/' % (min(settings['max_string_len'], max(1, self.column_size)))
     
     def __str__(self):
-        s = '%s %s' % (self.column_name, self.nz_column)
+        s = '%s %s' % (self.column_name.ljust(33), self.nz_column.ljust(16))
         if self.is_nullable == 'NO' or settings['all_not_null']:
             s += ' NOT NULL'
         return s
